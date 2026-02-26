@@ -1,0 +1,53 @@
+`timescale 1ns/1ps
+
+module test_bench;
+
+    // Tham so mo phong nhanh
+    parameter CLK_FREQ   = 5;  // 1 tick = 0,5s (de mo phong nhanh)
+    parameter GREEN_SEC  = 5;  // Den xanh 2 giay 
+    parameter YELLOW_SEC = 3;  // Den vang 1 giay
+    parameter RED_SEC    = 2;  // Den do 1 giay 
+
+    reg clk;
+    reg rst_n;
+    wire green, yellow, red;
+
+    traffic_light #(
+        .CLK_FREQ(CLK_FREQ),
+        .GREEN_SEC(GREEN_SEC),
+        .YELLOW_SEC(YELLOW_SEC),
+        .RED_SEC(RED_SEC)
+    ) dut (
+        .clk(clk),
+        .rst_n(rst_n),
+        .green(green),
+        .yellow(yellow),
+        .red(red)
+    );
+
+    initial begin // tao xung clk voi f= 100MHZ
+        clk = 0;
+        forever #5 clk = ~clk;  
+    end
+
+    initial begin
+        $display("=== START SIMULATION ===");
+        
+        rst_n = 0;
+        #20;
+        rst_n = 1; 
+
+        #5000;
+
+        $display("=== END SIMULATION ===");
+        $finish;
+    end
+
+    // In trang thai den
+    always @(*) begin
+            if(green == 1) $display("[%0t] GREEN",  $time);
+            if(yellow == 1) $display("[%0t] YELLOW", $time);
+            if (red == 1) $display("[%0t] RED",    $time);
+    end
+
+endmodule
